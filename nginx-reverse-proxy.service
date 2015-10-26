@@ -1,0 +1,22 @@
+[Unit]
+Description=Nginx reverse proxy
+Requires=etcd.service
+Requires=docker.service
+After=etcd.service
+After=docker.service
+
+[Service]
+User=core
+EnvironmentFile=/etc/environment
+KillMode=none
+TimeoutStartSec=0
+Restart=always
+RestartSec=5s
+ExecStartPre=-/usr/bin/docker kill nginx-reverse-proxy-%i
+ExecStartPre=-/usr/bin/docker rm nginx-reverse-proxy-%i
+ExecStart=/usr/bin/docker run --rm --name nginx-reverse-proxy-%i -e HOST_IP=${COREOS_PRIVATE_IPV4} \
+  -p ${COREOS_PRIVATE_IPV4}:8000:80 quay.io/cloudwalk/nginx-confd-etcd-reverse-proxy
+ExecStop=/usr/bin/docker stop nginx-reverse-proxy-%i
+
+[X-Fleet]
+Conflicts=nginx-reverse-proxy@*.service
