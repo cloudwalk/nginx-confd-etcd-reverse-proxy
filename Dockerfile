@@ -2,7 +2,7 @@ FROM gliderlabs/alpine:3.2
 
 MAINTAINER Allan Costa <allaninocencio@yahoo.com.br>
 
-RUN apk --update add nginx curl \
+RUN apk --update add nginx curl bash \
     && mkdir -p /tmp/nginx/client-body \
     && rm -rf /var/cache/apk/*
 
