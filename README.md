@@ -1,4 +1,4 @@
-# NGINX reverse proxy configured by confd using ETCD as backend
+# NGINX reverse proxy configured by confd using etcd as backend
 
 [![Docker Repository on Quay.io](https://quay.io/repository/cloudwalk/nginx-confd-etcd-reverse-proxy/status "Docker Repository on Quay.io")](https://quay.io/repository/cloudwalk/nginx-confd-etcd-reverse-proxy)
 
