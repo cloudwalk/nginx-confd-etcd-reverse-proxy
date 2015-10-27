@@ -16,7 +16,7 @@ ExecStartPre=-/usr/bin/docker kill nginx-reverse-proxy-%i
 ExecStartPre=-/usr/bin/docker rm nginx-reverse-proxy-%i
 ExecStartPre=/usr/bin/docker pull quay.io/cloudwalk/nginx-confd-etcd-reverse-proxy
 ExecStart=/usr/bin/docker run --name nginx-reverse-proxy-%i -e HOST_IP=${COREOS_PRIVATE_IPV4} \
-  -p ${COREOS_PRIVATE_IPV4}:8000:80 quay.io/cloudwalk/nginx-confd-etcd-reverse-proxy
+  -p ${COREOS_PRIVATE_IPV4}:80:80 quay.io/cloudwalk/nginx-confd-etcd-reverse-proxy
 ExecStop=/usr/bin/docker stop nginx-reverse-proxy-%i
 
 [X-Fleet]
