@@ -13,26 +13,33 @@ http {
     gzip on;
     gzip_types application/json;
 
-    {{range $dir := lsdir "/applications"}}
-    upstream {{base $dir}} {
-        {{$custdir := printf "/applications/%s/*" $dir}}{{range getvs $custdir}}
-        server {{.}};
+    {{range $application := lsdir "/applications"}}
+
+        {{$appdir := printf "/applications/%s" $application}}
+        {{range $subpath := lsdir $appdir}}
+            upstream {{$application}}_{{$subpath}} {
+                {{$custdir := printf "/applications/%s/%s/*" $application $subpath}}{{range getvs $custdir}}
+                server {{.}};
+                {{end}}
+            }
         {{end}}
-    }
 
-    server {
-        listen 8001;
-        server_name {{base $dir}}.cloudwalk.io;
+        server {
+            listen 8001;
+            server_name {{$application}}.cloudwalk.io;
 
-        location / {
-            proxy_pass http://{{base $dir}};
-            proxy_redirect http://{{base $dir}}.cloudwalk.io http://$host:$server_port;
-            proxy_set_header   Host $host:$server_port;
-            proxy_set_header   X-Real-IP $remote_addr;
-            proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header   X-Forwarded-Host $server_name;
+            {{range $subpath := lsdir $appdir}}
+                location /{{ if (ne $subpath "root") }}{{$subpath}}{{end}} {
+                    proxy_pass http://{{$application}}_{{$subpath}};
+                    proxy_redirect http://{{$application}}.cloudwalk.io http://$host:$server_port;
+                    proxy_set_header   Host $host:$server_port;
+                    proxy_set_header   X-Real-IP $remote_addr;
+                    proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header   X-Forwarded-Host $server_name;
+                }
+            {{end}}
         }
-    }
+
     {{end}}
 
 }
