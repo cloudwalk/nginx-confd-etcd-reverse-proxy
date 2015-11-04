@@ -13,18 +13,33 @@ This is used to proxy requests to applications running in a CoreOS cluster.
 ## Registering services
 
 To register a service to be accessed in `test.cloudwalk.io`, for example, we should
-set it's internal `ip:port` in etcd key `/applications/test/1`.
+set it's internal `ip:port` in etcd key `/applications/test/root/1`.
 
 If it has more than one server to be added to it's upstream, we just set all of
 them incrementing the server index, like this:
 
 ```
-etcdctl set /applications/test/1 192.168.1.101:5000
-etcdctl set /applications/test/2 192.168.1.102:5000
-etcdctl set /applications/test/3 192.168.1.103:5000
+etcdctl set /applications/test/root/1 192.168.1.101:5000
+etcdctl set /applications/test/root/2 192.168.1.102:5000
+etcdctl set /applications/test/root/3 192.168.1.103:5000
 ```
 
-We can add as many services as we want to following this pattern.
+If we need different paths to have different upstreams (for the same application),
+like when the application uses more than one port, we change the `root` portion
+of the example above. For instance, if our `test` application serves a websocket
+in port `9000`, we can set a upstream that receives requests in `test.cloudwalk.io/ws`
+like this:
+
+```
+etcdctl set /applications/test/ws/1 192.168.1.101:9000
+etcdctl set /applications/test/ws/2 192.168.1.102:9000
+etcdctl set /applications/test/ws/3 192.168.1.103:9000
+```
+
+Observe that the `root` path is treated specially and  always will have as
+corresponding NGINX location `/`.
+
+We can also add as many services as we want to following this pattern.
 
 Usually, we create [discovery services] to automatically register the service.
 
