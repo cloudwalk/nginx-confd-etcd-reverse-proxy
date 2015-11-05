@@ -37,7 +37,8 @@ etcdctl set /applications/test/ws/3 192.168.1.103:9000
 ```
 
 Observe that the `root` path is treated specially and  always will have as
-corresponding NGINX location `/`.
+corresponding NGINX location `/`. The only other special path is `/ws`, in that
+we set the headers to work with websocket in that path.
 
 We can also add as many services as we want to following this pattern.
 
